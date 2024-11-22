@@ -1,0 +1,20 @@
+rabbitmq:
+    build:
+      context: ./
+    container_name: rabbitMQ
+    image: rabbitmq:3-management
+    restart: always
+    ports:
+      - "5672:5672"   
+      - "15672:15672"  
+    environment:
+      RABBITMQ_DEFAULT_USER: admin
+      RABBITMQ_DEFAULT_PASS: admin
+    volumes:
+      - rabbitmq_data:/var/lib/rabbitmq
+      - ./rabbitmq_conf:/etc/rabbitmq  # Mount for custom configuration
+    networks:
+      - api_network
+networks:
+  api_network:
+    driver: bridge
