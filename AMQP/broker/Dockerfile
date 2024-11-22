@@ -8,8 +8,6 @@ ENV RABBITMQ_DEFAULT_PASS=admin
 
 RUN rabbitmq-plugins enable rabbitmq_management
 
-RUN abbitmqctl add_user celery celery
-
 # # Enable plugins 
 # RUN rabbitmq-plugins enable rabbitmq_auth_backend_oauth2 #For later use
 
