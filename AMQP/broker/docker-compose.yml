@@ -1,7 +1,9 @@
+services:
+  
 rabbitmq:
     build:
       context: ./
-    container_name: rabbitMQ
+    container_name: PA-rabbitMQ
     image: rabbitmq:3-management
     restart: always
     ports:
