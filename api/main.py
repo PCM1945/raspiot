@@ -1,8 +1,8 @@
 from fastapi import FastAPI
-import dht
+import services.dht as dht
 import uvicorn
-from models.comera_control import Relay
-import relay as relay
+from models.relayControlModel import Relay
+import services.relay as relay
 
 
 app = FastAPI()
