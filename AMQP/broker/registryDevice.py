@@ -2,6 +2,10 @@ from zeroconf import ServiceInfo, Zeroconf
 import asyncio
 import socket
 from concurrent.futures import ThreadPoolExecutor
+from dotenv import load_dotenv
+import os
+
+load_dotenv('.env.production')
 
 class AsyncZeroconfClient:
     def __init__(self):
@@ -28,8 +32,8 @@ async def client_register():
     service_type = "_example._tcp.local."  # Service type
     service_name = "MyClientService._example._tcp.local."  # Client's service name
     port = 23456  # Port where the client may listen for requests
-    ip_address = socket.gethostbyname(socket.gethostname())  # Local IP address
-    properties = {"role": "client", "version": "1.0"}  # Optional metadata
+    ip_address = os.getenv('HOST_IP') #socket.gethostbyname(socket.gethostname())  # Local IP address
+    properties = {"role": "client", "version": "1.0", "server_add": f"{os.getenv('HOST_IP')}"}  # Optional metadata
 
     # Convert IP to bytes
     address = socket.inet_aton(ip_address)

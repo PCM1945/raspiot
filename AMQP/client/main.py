@@ -45,11 +45,9 @@ async def wait_for_ip():
             return ip
         await asyncio.sleep(5)  # Wait for 5 seconds before checking again
 
-
-
 # Main function to execute the script
 async def main():
-    
+
     try:
         open_hardware_monitor_path = os.getenv('OPEN_HARDWARE_MONITOR_PATH')
         if not open_hardware_monitor_path:
@@ -57,6 +55,7 @@ async def main():
             abs_path = os.path.abspath(open_hardware_monitor_path)
             # Start the PowerShell script to run the OpenHardwareMonitor as an administrator
             subprocess.Popen(["powershell", "Start-Process",abs_path , "-Verb", "RunAs"], shell=True)
+
         while True:
             # Wait for the IP address to be available in the .env file
             ip_server = await wait_for_ip()
