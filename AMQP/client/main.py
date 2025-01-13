@@ -45,7 +45,7 @@ async def wait_for_ip():
             return ip
         await asyncio.sleep(5)  # Wait for 5 seconds before checking again
 
-
+# olá mundo
 
 # Main function to execute the script
 async def main():
