@@ -1,9 +1,9 @@
-from zeroconf import ServiceInfo, Zeroconf, ZeroconfServiceTypes
+from zeroconf import ServiceInfo, Zeroconf
 import asyncio
 import socket
 from concurrent.futures import ThreadPoolExecutor
 
-class AsyncZeroconf:
+class AsyncZeroconfClient:
     def __init__(self):
         self.zeroconf = Zeroconf()
         self.executor = ThreadPoolExecutor()
@@ -11,58 +11,58 @@ class AsyncZeroconf:
     async def register_service(self, info):
         loop = asyncio.get_running_loop()
         await loop.run_in_executor(self.executor, self.zeroconf.register_service, info)
+        print(f"Service '{info.name}' registered.")
 
     async def unregister_service(self, info):
         loop = asyncio.get_running_loop()
         await loop.run_in_executor(self.executor, self.zeroconf.unregister_service, info)
+        print(f"Service '{info.name}' unregistered.")
 
     async def close(self):
         loop = asyncio.get_running_loop()
         await loop.run_in_executor(self.executor, self.zeroconf.close)
+        print("Zeroconf closed.")
 
-async def main():
-    # Define service details
-    service_type = "_smartHome._tcp.local."
-    service_name = "SmartHome._example._tcp.local."
-    port = 12345  # Port the service runs on
-    # Obtém o nome do host
-    hostname = socket.gethostname()
-    # Obtém o endereço IP associado ao nome do host
-    ip_address = socket.gethostbyname(hostname)
-    address = socket.inet_aton(ip_address)  # Replace with your IP
-    properties = {"version": "1.0"}  # Service metadata
+async def client_register():
+    # Define client service details
+    service_type = "_example._tcp.local."  # Service type
+    service_name = "MyClientService._example._tcp.local."  # Client's service name
+    port = 23456  # Port where the client may listen for requests
+    ip_address = socket.gethostbyname(socket.gethostname())  # Local IP address
+    properties = {"role": "client", "version": "1.0"}  # Optional metadata
 
-    # Create service info
+    # Convert IP to bytes
+    address = socket.inet_aton(ip_address)
+
+    # Create ServiceInfo for the client
     info = ServiceInfo(
         service_type,
         service_name,
         addresses=[address],
         port=port,
         properties=properties,
-        server=f"{hostname}.local."
+        server="my-client.local."  # Hostname
     )
 
-    # Set up asynchronous Zeroconf
-    async_zeroconf = AsyncZeroconf()
+    async_zeroconf = AsyncZeroconfClient()
 
     try:
-        print("Registering service...")
+        print(f"Registering client '{service_name}'...")
         await async_zeroconf.register_service(info)
-        print(f"Service '{service_name}' registered. Running async server...")
-        
-        # Keep the service running
+
+        # Keep the service alive indefinitely
+        print("Client is running. Press Ctrl+C to stop.")
         while True:
             await asyncio.sleep(1)
+
     except asyncio.CancelledError:
-        print("Shutting down service...")
+        print("\nClient shutting down...")
     finally:
-        print("Unregistering service...")
         await async_zeroconf.unregister_service(info)
         await async_zeroconf.close()
-        print("Service unregistered and zeroconf closed.")
 
 if __name__ == "__main__":
     try:
-        asyncio.run(main())
+        asyncio.run(client_register())
     except KeyboardInterrupt:
-        print("Server stopped by user.")
+        print("\nClient stopped by user.")
